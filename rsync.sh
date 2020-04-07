@@ -16,7 +16,7 @@ do
 	
 	case $choix in
 		1) 	crontab -e;; 	#*/30 *  *   *   *    "PATH"/automate.sh
-							#ici l'automatisation va lancer le script backup.sh toutes les 30 minutes
+							#ici l'automatisation va lancer le script automate.sh toutes les 30 minutes
 		2) 	date=$(date +%d-%m-%Y)
 			heure=$(date +%Hh%M)
 			#on va maintenant renseigner le fichier backups.txt sur les sauvegardes effectuées.

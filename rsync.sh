@@ -18,7 +18,7 @@ do
 		1) 	crontab -e;;
 		2) 	date=$(date +%d-%m-%Y)
 			heure=$(date +%Hh%M)
-			echo -n "Backup effectué le $date à $heure     " >> /media/corentin/USB_MICHELC/backups.txt && rsync -arv --stats --delete -h /home/corentin/CloudStation/Documents /media/corentin/USB_MICHELC/ && echo "OK" >> /media/corentin/USB_MICHELC/backups.txt && sed -i 2'd' /media/corentin/USB_MICHELC/backups.txt && echo "" && echo "" && echo "\033[1;33mBACKUP EFFECTUE AVEC SUCCES LE $date à $heure\033[0m\n" && exit 0 || echo "\033[1;31mERREUR !!! IL FAUT DEMONTER LA PARTITION ET RECOMMENCER\033[0m\n" && exit 1;;
+			echo -n "Backup effectué le $date à $heure     " >> "PATH"/backups.txt && rsync -arv --stats --delete -h "SOURCE A SAUVEGARDER" "DESTINATION" && echo "OK" >> "PATH"/backups.txt && sed -i 2'd' "PATH"/backups.txt && echo "" && echo "" && echo "\033[1;33mBACKUP EFFECTUE AVEC SUCCES LE $date à $heure\033[0m\n" && exit 0 || echo "\033[1;31mERREUR !!! IL FAUT DEMONTER LA PARTITION ET RECOMMENCER\033[0m\n" && exit 1;;
 		#*)	echo "Ce choix '$choix' n'est pas valable !!!";;
 	esac
 done

@@ -8,8 +8,8 @@ Pour annuler la sauvegarde, supprimez la ligne ou ajouter un #: `#*/30 *  *   
 
 N'oubliez pas de changer les chemins de "SOURCE" et de "DESTINATION" pour rsync (s'aider de la documentation) et "PATH" pour le dossier contenant les scripts.
 
-Exemple : `*/30 *  *   *   *    ~/scripts/automate.sh`
-
+Exemples :<br> `*/30 *  *   *   *    ~/scripts/automate.sh`
+`rsync ~/dossier_a_sauvegarder /media/user/USB/`
 Je vous conseille de mettre le fichier backups.txt sur le support externe, afin de garder une trace des sauvegardes faites.
 Je vous ai laissé 10 lignes afin de voir le résulat final. N'oubliez pas que script va supprimer la 2ème ligne à chaque fois qu'il écrira dans le fichier.
 

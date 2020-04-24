@@ -14,7 +14,7 @@ Explication pour les options de rsync :
 https://doc.ubuntu-fr.org/rsync
 
 Je vous conseille de mettre le fichier backups.txt sur le support externe, afin de garder une trace des sauvegardes faites.
-Je vous ai laissé 10 lignes afin de voir le résulat final. N'oubliez pas que script va supprimer la 2ème ligne à chaque fois qu'il écrira dans le fichier.
+Je vous ai laissé 10 lignes afin de voir le résultat final. N'oubliez pas que script va supprimer la 2e ligne à chaque fois qu'il écrira dans le fichier.
 
 N'oubliez pas qu'une bonne sauvegarde est une sauvegarde régulière.
 S+KOH

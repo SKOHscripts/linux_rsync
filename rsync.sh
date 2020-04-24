@@ -1,28 +1,35 @@
-#!/bin/sh
+#!/bin/bash
 
-clear
-echo "\t\033[1;33m CHOIX DE L'AUTOMATISATION\n\033[0m"
-echo "Editer crontab\t\t\033[1;32m(1)\033[0m"
-echo "Juste faire le backup\t\033[1;32m(2)\033[0m"
-echo ""
+BGN_CRON="Editer crontab"
+BGN_BACKUP="Faire le backup"
 
-while read choix
-do
-	clear
-	echo "\t\033[1;33m CHOIX DE L'AUTOMATISATION\n\033[0m"
-	echo "Editer crontab\t\t\033[1;32m(1)\033[0m"
-	echo "Juste faire le backup\t\033[1;32m(2)\033[0m"
-	echo ""
+#On va maintenant renseigner le fichier backups.txt sur les sauvegardes effectuées.
+#Il faudra ici changer les "SOURCE" et "DESTINATION" pour rsync
+#Il faudra également changer "TXT" pour le fichier backups.txt
+
+TXT="/media/user/USB/backups.txt"
+SOURCE="/home/user/Documents/"
+DESTINATION="/media/user/USB/Documents"
+
+CHK_REP=$(zenity --entry --title="Backup" --text "Que voulez-vous faire ?" --entry-text="$BGN_BACKUP" "$BGN_CRON" "")
+if [ $? -ne 0 ] ; then
+	exit
+fi
+
+chkDef() {
+	case "$CHK_REP" in
+		"$BGN_BACKUP") 	date=$(date +%d-%m-%Y)
+						heure=$(date +%Hh%M)
+						#on va maintenant renseigner le fichier backups.txt sur les sauvegardes effectuées.
+						#Il faudra ici changer les "SOURCE" et "DESTINATION" pour rsync
+						#Il faudra également changer "PATH" pour le fichier backups.txt
+						echo -n "Backup effectué le $date à $heure     " >> $TXT && rsync -arv --stats --delete -h $SOURCE $DESTINATION && echo "OK" >> $TXT && sed -i 2'd' $TXT && echo "" && echo "" && notify-send -i dialog-ok "Backup" "Terminée avec succès le $date à $heure" -t 500 && exit 0 || zenity --warning --height 80 --width 400 --title "EREUR" --text "Il y a eu une erreur de synchronisation des dossiers. Veuillez démonter la partition et recommencer." && echo "ERREUR" >> $TXT && exit 1;;
 	
-	case $choix in
-		1) 	crontab -e;; 	#*/30 *  *   *   *    "PATH"/automate.sh
-							#ici l'automatisation va lancer le script automate.sh toutes les 30 minutes
-		2) 	date=$(date +%d-%m-%Y)
-			heure=$(date +%Hh%M)
-			#on va maintenant renseigner le fichier backups.txt sur les sauvegardes effectuées.
-			#Il faudra ici changer les "SOURCE" et "DESTINATION" pour rsync
-			#Il faudra également changer "PATH" pour le fichier backups.txt
-			echo -n "Backup effectué le $date à $heure     " >> "PATH"/backups.txt && rsync -arv --stats --delete -h "SOURCE" "DESTINATION" && echo "OK" >> "PATH"/backups.txt && sed -i 2'd' "PATH"/backups.txt && echo "" && echo "" && echo "\033[1;33mBACKUP EFFECTUE AVEC SUCCES LE $date à $heure\033[0m\n" && exit 0 || echo "\033[1;31mERREUR !!! IL FAUT DEMONTER LA PARTITION ET RECOMMENCER\033[0m\n" && exit 1;;
+		"$BGN_CRON") crontab -e;; 	#*/30 *  *   *   *    "PATH"/backup.sh
+						#ici l'automatisation va lancer le script backup.sh toutes les 30 minutes
 	esac
-done
+}
+
+chkDef
+
 

@@ -1,4 +1,7 @@
 # linux-rsync
+![Creative Commons](cc.png)
+
+Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
 
 Un script shell avec menu pour le choix d'une automatisation de la sauvegarde d'un dossier sur un support externe avec la méthode rsync.
 

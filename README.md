@@ -1,12 +1,12 @@
 # linux-rsync
-![Creative Commons](cc.png)
-
-Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+[![support](
+https://brianmacdonald.github.io/Ethonate/svg/eth-support-blue.svg)](
+https://brianmacdonald.github.io/Ethonate/address#0xEDa4b087fac5faa86c43D0ab5EfCa7C525d475C2)
 
 Un script shell avec menu pour le choix d'une automatisation de la sauvegarde d'un dossier sur un support externe avec la méthode rsync.
 
 La fenêtre crontab pour l'automatisation devra être ouverte avec nano. 
-Sur la dernière ligne, entrez `*/30 *  *   *   *    "PATH"/automate.sh` qui lancera le fichier automate.sh toutes les 30 minutes
+Sur la dernière ligne, entrez <br>`*/30 *  *   *   *    "PATH"/automate.sh` qui lancera le fichier automate.sh toutes les 30 minutes (changez cette valeur à votre guise).
 Pour annuler la sauvegarde, supprimez la ligne ou ajouter un #: `#*/30 *  *   *   *    "PATH"/automate.sh`
 
 N'oubliez pas de changer les chemins de "SOURCE" et de "DESTINATION" pour rsync (s'aider de la documentation) et "PATH" pour le dossier contenant les scripts.
@@ -17,9 +17,8 @@ Explication pour les options de rsync :
 https://doc.ubuntu-fr.org/rsync
 
 Je vous conseille de mettre le fichier backups.txt sur le support externe, afin de garder une trace des sauvegardes faites.
-Je vous ai laissé 10 lignes afin de voir le résultat final. N'oubliez pas que script va supprimer la 2e ligne à chaque fois qu'il écrira dans le fichier.
+Je vous ai laissé 10 lignes afin de voir le résultat final. N'oubliez pas que le script va supprimer la 2e ligne à chaque fois qu'il écrira dans le fichier.
 
-N'oubliez pas qu'une bonne sauvegarde est une sauvegarde régulière.
 S+KOH
 
 ``` bash 

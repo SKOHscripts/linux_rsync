@@ -3,77 +3,84 @@
 https://brianmacdonald.github.io/Ethonate/svg/eth-support-blue.svg)](
 https://brianmacdonald.github.io/Ethonate/address#0xEDa4b087fac5faa86c43D0ab5EfCa7C525d475C2)
 
-Un script shell avec menu pour le choix d'une automatisation de la sauvegarde d'un dossier sur un support externe avec la méthode rsync.
+# Système de Sauvegarde Automatisé avec Rsync et Intégration Cron
 
-La fenêtre crontab pour l'automatisation devra être ouverte avec nano. 
-Sur la dernière ligne, entrez <br>`*/30 *  *   *   *    "PATH"/automate.sh` qui lancera le fichier automate.sh toutes les 30 minutes (changez cette valeur à votre guise).
-Pour annuler la sauvegarde, supprimez la ligne ou ajouter un #: `#*/30 *  *   *   *    "PATH"/automate.sh`
+Solution robuste pour la synchronisation et la sauvegarde de répertoires sous Linux, avec gestion avancée des exclusions, journalisation détaillée et intégration transparente avec cron.
 
-N'oubliez pas de changer les chemins de "SOURCE" et de "DESTINATION" pour rsync (s'aider de la documentation) et "PATH" pour le dossier contenant les scripts.
+## Fonctionnalités Clés
+- **Sauvegarde incrémentielle** avec rsync pour une efficacité optimale
+- **Planification automatique** via cron avec gestion des variables d'environnement graphique
+- **Journalisation complète** avec rotation automatique des logs
+- **Notifications visuelles** (zenity) et système (systemd-cat)
+- **Exclusions intelligentes** des répertoires temporaires, caches et environnements de développement
+- **Gestion des erreurs** détaillée avec codes de sortie explicites
 
-Exemple :<br> `*/30 *  *   *   *    ~/scripts/automate.sh`
+## Installation
+git clone https://github.com/votre-utilisateur/linux_rsync.git
+cd linux_rsync
+chmod +x automate.sh
 
-Explication pour les options de rsync : 
-https://doc.ubuntu-fr.org/rsync
+## Utilisation Basique
+./automate.sh -s /chemin/source -d /chemin/destination
 
-Je vous conseille de mettre le fichier backups.txt sur le support externe, afin de garder une trace des sauvegardes faites.
-Je vous ai laissé 10 lignes afin de voir le résultat final. N'oubliez pas que le script va supprimer la 2e ligne à chaque fois qu'il écrira dans le fichier.
+### Options Principales
+| Option | Description |
+|--------|-------------|
+| `-s`   | Répertoire source à sauvegarder (obligatoire) |
+| `-d`   | Destination de la sauvegarde (obligatoire) |
+| `-c`   | Activer la planification cron toutes les 12h |
+| `-h`   | Afficher l'aide |
 
-S+KOH
+## Configuration Avancée
+### Exclusions Types
+--exclude="/node_modules/"
+--exclude="/pycache/"
+--exclude="**/.idea/"
 
-``` bash 
-#!/bin/bash
+_Liste complète des modèles d'exclusion dans le script [source](automate.sh)_
 
-BGN_CRON="Editer crontab"
-BGN_BACKUP="Faire le backup"
+### Variables d'Environnement
+export DISPLAY=:0 # Pour les notifications graphiques
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
 
-TXT="/media/user/USB/backups.txt"
-SOURCE="/home/user/Documents/"
-DESTINATION="/media/user/USB/Documents"
+## Gestion des Journaux
+| Fichier | Description |
+|---------|-------------|
+| `backup.log` | Journal principal des opérations |
+| `rsync_*.log` | Logs détaillés par session rsync |
+Rotation automatique après 7 jours
+find "${DESTINATION}" -name "rsync_*.log" -mtime +7 -delete
 
-which zenity > /dev/null
-if [ $? = 1 ]
-then
-	sudo apt install -y zenity
-fi
+## Intégration Cron
+Pour activer les sauvegardes planifiées :
+./automate.sh -s /home/user -d /backup -c
 
-which notify-send > /dev/null
-if [ $? = 1 ]
-then
-	sudo apt install -y libnotify-bin
-fi
+_Commande cron générée :_
+0 */12 * * * /bin/bash -c 'export $(cat /proc/$(pgrep -u $USER gnome-session | head -1)/environ | tr "\0" "\n" | grep -E "DISPLAY|DBUS_SESSION_BUS_ADDRESS")' && /chemin/absolu/automate.sh -s /home/user -d /backup
 
-which rsync > /dev/null
-if [ $? = 1 ]
-then
-	sudo apt install -y rsync
-fi
+## Dépannage
+### Erreurs Courantes
+1. **Permissions insuffisantes**
+chmod 700 /chemin/destination
 
-# Vérification que le script n'est pas lancé directement avec sudo (le script contient déjà les sudos pour les actions lorsque c'est nécessaire)
-if [ "$UID" -eq "0" ]
-then
-    zenity --warning --height 80 --width 400 --title "EREUR" --text "Merci de lancez le script sans sudo : \n<b>./rsync.sh</b>\nVous devrez entrer le mot de passe root par la suite."
-    exit
-fi
+2. **Dépendances manquantes**
+Installer rsync et zenity :
+sudo apt install rsync zenity
 
-CHK_REP=$(zenity --entry --title="Backup" --text "Que voulez-vous faire ?" --entry-text="$BGN_BACKUP" "$BGN_CRON" "")
-if [ $? -ne 0 ] ; then
-	exit
-fi
+3. **Problèmes d'environnement cron**
+Vérifier les variables DISPLAY/DBUS avec :
+env | grep -E 'DISPLAY|DBUS'
 
-chkDef() {
-	case "$CHK_REP" in
-		"$BGN_BACKUP") 	date=$(date +%d-%m-%Y)
-						heure=$(date +%Hh%M)
-						#on va maintenant renseigner le fichier backups.txt sur les sauvegardes effectuées.
-					#Il faudra ici changer les "SOURCE" et "DESTINATION" pour rsync
-					#Il faudra également changer "PATH" pour le fichier backups.txt
-						echo -n "Backup effectué le $date à $heure     " >> $TXT && rsync -arv --stats --delete -h $SOURCE $DESTINATION && echo "OK" >> $TXT && sed -i 2'd' $TXT && echo "" && echo "" && notify-send -i dialog-ok "Backup" "Terminé avec succès le $date à $heure" -t 500 && exit 0 || zenity --warning --height 80 --width 400 --title "EREUR" --text "Il y a eu une erreur de synchronisation des dossiers. Veuillez démonter la partition et recommencer." && echo "ERREUR" >> $TXT && exit 1;;
-	
-		"$BGN_CRON") crontab -e;; 	#*/30 *  *   *   *    "PATH"/backup.sh
-									#ici l'automatisation va lancer le script backup.sh toutes les 30 minutes
-	esac
-}
+## Contribution
+Les contributions sont les bienvenues via pull requests. Merci de respecter les guidelines :
+- Tests sur multiples distributions Linux
+- Documentation mise à jour
+- Validation ShellCheck
 
-chkDef
-```
+## Licence
+GPL-3.0 - Voir le fichier [LICENSE](LICENSE)
+
+---
+
+**Compatibilité** : Testé sur Debian 12, EndeavourOS (2025.02.08, Mercury) based on Arch Linux
+**Dépendances** : rsync >= 3.2.3, zenity >= 3.32.0, systemd >= 247
